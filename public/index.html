@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Product Page</title>
+</head>
+<body>
+  <h1>Product Details</h1>
+  <div id="product-details">
+    <p>Name: <span id="product-name"></span></p>
+    <p>Price: <span id="product-price"></span></p>
+  </div>
+
+  <h2>Update Product</h2>
+  <input type="text" id="name-input" placeholder="New Name">
+  <input type="text" id="price-input" placeholder="New Price">
+  <button onclick="updateProduct()">Send</button>
+
+  <h2>Delete Product</h2>
+  <button onclick="deleteProduct()">Delete</button>
+
+  <script>
+    // Fungsi untuk mengambil data produk dari API dan memperbarui tampilan
+    function getProduct() {
+      fetch('/api/product')
+        .then(response => response.json())
+        .then(product => {
+          document.getElementById('product-name').textContent = product.name;
+          document.getElementById('product-price').textContent = product.price;
+        })
+        .catch(error => console.log(error));
+    }
+
+    // Fungsi untuk mengirim permintaan PUT ke API untuk memperbarui data produk
+    function updateProduct() {
+      const name = document.getElementById('name-input').value;
+      const price = document.getElementById('price-input').value;
+
+      fetch('/api/product', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name, price })
+      })
+      .then(response => response.json())
+      .then(product => {
+        // Memperbarui tampilan dengan data produk yang diperbarui
+        document.getElementById('product-name').textContent = product.name;
+        document.getElementById('product-price').textContent = product.price;
+        // Mengosongkan input setelah permintaan berhasil
+        document.getElementById('name-input').value = '';
+        document.getElementById('price-input').value = '';
+      })
+      .catch(error => console.log(error));
+    }
+
+    // Fungsi untuk mengirim permintaan DELETE ke API untuk menghapus data produk
+    function deleteProduct() {
+      fetch('/api/product', {
+        method: 'DELETE'
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Mengosongkan tampilan produk setelah data dihapus
+        document.getElementById('product-name').textContent = '';
+        document.getElementById('product-price').textContent = '';
+      })
+      .catch(error => console.log(error));
+    }
+
+    // Memanggil fungsi getProduct saat halaman dimuat
+    window.onload = getProduct;
+  </script>
+</body>
+</html>
